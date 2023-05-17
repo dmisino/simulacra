@@ -1,4 +1,6 @@
 import os
+import csv
+from io import StringIO
 
 def get_openai_gpt35_cost(total_tokens):
     total_cost = total_tokens/1000 * 0.002
@@ -32,3 +34,11 @@ def read_file_to_array(file_path):
         for line in file:
             lines.append(line.strip())
     return lines
+
+def csv_string_to_array(string):
+    a = []
+    with StringIO(string) as file:
+        for line in file:
+            values = line.split('", "')
+            a.append([values[0].strip().replace('"', ''), values[1].strip().replace('"', '')])
+    return a

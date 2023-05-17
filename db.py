@@ -42,6 +42,7 @@ class db():
                 entity_id       INTEGER NOT NULL REFERENCES entity (id),
                 type_id         INTEGER NOT NULL,
                 memory          TEXT NOT NULL,
+                keywords        TEXT NOT NULL,
                 embedding       BLOB NOT NULL,
                 date            TEXT NOT NULL
                 )"""
@@ -92,21 +93,30 @@ class db():
         return new_id
 
     @staticmethod
-    def get_embedding(text):
+    def get_memories_for_entity(entity_id):
+        conn = db.get_db_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, memory, keywords FROM memory WHERE entity_id = ?", (entity_id,))
+        memories = cursor.fetchall()
+        conn.close()
+        return memories
+
+    @staticmethod
+    def get_embedding(keywords):
         model = SentenceTransformer('bert-base-nli-mean-tokens')  # Choose a pre-trained model
-        embedding = model.encode([text])
+        embedding = model.encode([keywords])
         return embedding[0]
 
     @staticmethod
-    def get_embeddings(memories):
+    def get_embeddings(keywords_array):
         model = SentenceTransformer('bert-base-nli-mean-tokens')  # Choose a pre-trained model
-        embeddings = model.encode(memories)
+        embeddings = model.encode(keywords_array)
         return embeddings
     
     @staticmethod
-    def save_memory(entity_id, type_id, memory):
+    def save_memory(entity_id, type_id, memory, keywords):
         # Get the embedding for the string and convert to bytes
-        embedding = db.get_embedding(memory)
+        embedding = db.get_embedding(keywords)
         embedding_bytes = embedding.tobytes()
         
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -114,34 +124,31 @@ class db():
         # Get connection and save record
         conn = db.get_db_conn()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO memory (entity_id, type_id, memory, embedding, date) VALUES (?, ?, ?, ?, ?)", (entity_id, type_id, memory, embedding_bytes, date))
+        cursor.execute("INSERT INTO memory (entity_id, type_id, memory, keywords, embedding, date) VALUES (?, ?, ?, ?, ?, ?)", (entity_id, type_id, memory, keywords, embedding_bytes, date))
         conn.commit()
         conn.close()
 
+    # memories parameter must be a 2 dimensional array of [memory, keywords]
     @staticmethod
     def save_memories(entity_id, type_id, memories):
         conn = db.get_db_conn()
         cursor = conn.cursor()        
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
-        start_time = time.time()
-        print("getting embeddings")
-        embeddings = db.get_embeddings(memories)
-        end_time = time.time()
-        print("getting embeddings complete, time: " + str(end_time - start_time))
 
+        # split keywords into separate array
+        keywords = []
+        for memory in memories:
+            keywords.append(memory[1])
+
+        embeddings = db.get_embeddings(keywords)
         data = []
         i = 0
-        print("preparing data")
         for memory in memories:
             embedding_bytes = embeddings[i].tobytes()
-            data.append((entity_id, type_id, memory, embedding_bytes, date))
+            data.append((entity_id, type_id, memory[0], keywords[i], embedding_bytes, date))
             i += 1
-        query = "INSERT INTO memory (entity_id, type_id, memory, embedding, date) VALUES (?, ?, ?, ?, ?)"
-        print("preparing data complete")
-        # Execute the query with executemany()
+        query = "INSERT INTO memory (entity_id, type_id, memory, keywords, embedding, date) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(query, data)
-
         conn.commit()
         conn.close()
 
@@ -161,20 +168,20 @@ class db():
         # Get connection and retrieve relevant columns from memory table
         conn = db.get_db_conn()
         cursor = conn.cursor()    
-        cursor.execute("SELECT id, entity_id, type_id, memory, embedding FROM memory WHERE entity_id = ?", (entity_id,))
+        cursor.execute("SELECT id, entity_id, type_id, memory, keywords, embedding FROM memory WHERE entity_id = ?", (entity_id,))
         rows = cursor.fetchall()
 
         # Calculate cosine similarity for each row and populate similarity column
         new_rows = []
         for row in rows:
-            row_embedding = np.frombuffer(row[4], dtype=np.float64)
+            row_embedding = np.frombuffer(row[5], dtype=np.float64)
             resized_input_embedding = db.resize_embedding(input_embedding, row_embedding.shape[0])
             similarity = cosine_similarity([resized_input_embedding], [row_embedding])[0][0]
-            new_row = row[:4] + (similarity,)
+            new_row = row[:5] + (similarity,)
             new_rows.append(new_row)
 
         # Sort the rows based on cosine similarity
-        sorted_rows = sorted(new_rows, key=lambda x: x[4], reverse=True)
+        sorted_rows = sorted(new_rows, key=lambda x: x[5], reverse=True)
 
         # Return the limited number of similar rows with relevant columns
         return sorted_rows[:limit]
