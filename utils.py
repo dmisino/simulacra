@@ -1,6 +1,27 @@
-import os
 import csv
+import os
 from io import StringIO
+import sys
+import string
+
+def strip_non_letters(text):
+    """
+    Remove non-letter characters from the beginning, and 
+    whitespace from the end of a string
+    """    
+    formatted_text = text.lstrip(string.punctuation + string.whitespace)
+    formatted_text = formatted_text.rstrip(string.whitespace)
+    return formatted_text
+
+def console_output(switch):
+    """
+    Turn console output on or off
+    """
+    if switch == 0:
+        sys.stdout = open(os.devnull, 'w') # Turn off console output
+    else:
+        sys.stdout = sys.__stdout__ # Turn on console output
+    
 
 def get_openai_gpt35_cost(total_tokens):
     total_cost = total_tokens/1000 * 0.002

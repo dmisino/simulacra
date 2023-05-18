@@ -1,8 +1,11 @@
-from db import db
-from prompt import get_random_memories_prompt, extract_keywords_prompt
-import openai
-from utils import csv_string_to_array
 import asyncio
+
+import openai
+
+from db import db
+from prompt import extract_keywords_prompt, get_random_memories_prompt
+from utils import strip_non_letters
+
 
 async def llm(prompt):
     messages = [{"role": "user", "content" : prompt}]
@@ -20,7 +23,6 @@ async def extract_keywords(input):
 async def add_random_memories(entity_id, count):
     prompt = get_random_memories_prompt(count)
     response = await llm(prompt)
-    
-    # response should be a csv fomatted list with 2 columns: memory, keywords
-    memories = csv_string_to_array(response)
+    memories = response.splitlines()
+    memories = [strip_non_letters(memory) for memory in memories]
     db.save_memories(entity_id, 1, memories)

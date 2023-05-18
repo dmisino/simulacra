@@ -1,16 +1,33 @@
+import re
 import sqlite3
-from sentence_transformers import SentenceTransformer
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime
+
+import nltk
 import numpy as np
+from nltk.corpus import stopwords
 from numpy.linalg import norm
-import time
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
 DB_NAME = "simulacra.db"
+TRANSFORMER_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 class db():
     override_db_name = ""
+    stop_words = None
+
+    @staticmethod
+    def remove_stop_words(text):
+        """
+        Removes unimportant words from a string of text.
+        """
+        if db.stop_words == None:
+            nltk.download('stopwords', quiet=True) # Download if not already present
+            db.stop_words = stopwords.words('english')
+        text_words = re.findall(r'\b\w+\b', text) # Split into words, removing spaces and punctuation
+        filtered_words = [word for word in text_words if word not in db.stop_words]
+        filtered_text = ' '.join(filtered_words)
+        return filtered_text
 
     @staticmethod
     def get_db_conn():
@@ -102,20 +119,27 @@ class db():
         return memories
 
     @staticmethod
-    def get_embedding(keywords):
-        model = SentenceTransformer('bert-base-nli-mean-tokens')  # Choose a pre-trained model
-        embedding = model.encode([keywords])
+    def get_embedding(text):
+        """
+        Get an embedding for a string
+        """
+        model = SentenceTransformer(TRANSFORMER_MODEL)
+        embedding = model.encode([text])
         return embedding[0]
 
     @staticmethod
-    def get_embeddings(keywords_array):
-        model = SentenceTransformer('bert-base-nli-mean-tokens')  # Choose a pre-trained model
-        embeddings = model.encode(keywords_array)
+    def get_embeddings(text_array):
+        """
+        Get embeddings for an array of strings
+        """
+        model = SentenceTransformer(TRANSFORMER_MODEL)
+        embeddings = model.encode(text_array)
         return embeddings
     
     @staticmethod
-    def save_memory(entity_id, type_id, memory, keywords):
+    def save_memory(entity_id, type_id, memory):
         # Get the embedding for the string and convert to bytes
+        keywords = db.remove_stop_words(memory)
         embedding = db.get_embedding(keywords)
         embedding_bytes = embedding.tobytes()
         
@@ -128,7 +152,6 @@ class db():
         conn.commit()
         conn.close()
 
-    # memories parameter must be a 2 dimensional array of [memory, keywords]
     @staticmethod
     def save_memories(entity_id, type_id, memories):
         conn = db.get_db_conn()
@@ -138,14 +161,14 @@ class db():
         # split keywords into separate array
         keywords = []
         for memory in memories:
-            keywords.append(memory[1])
+            keywords.append(db.remove_stop_words(memory).lower())
 
         embeddings = db.get_embeddings(keywords)
         data = []
         i = 0
         for memory in memories:
             embedding_bytes = embeddings[i].tobytes()
-            data.append((entity_id, type_id, memory[0], keywords[i], embedding_bytes, date))
+            data.append((entity_id, type_id, memory, keywords[i], embedding_bytes, date))
             i += 1
         query = "INSERT INTO memory (entity_id, type_id, memory, keywords, embedding, date) VALUES (?, ?, ?, ?, ?, ?)"
         cursor.executemany(query, data)
@@ -163,7 +186,7 @@ class db():
 
     @staticmethod
     def find_relevant_memories_for_entity(entity_id, input_string, limit):
-        input_embedding = db.get_embedding(input_string)
+        input_embedding = db.get_embedding(db.remove_stop_words(input_string))
 
         # Get connection and retrieve relevant columns from memory table
         conn = db.get_db_conn()

@@ -14,6 +14,23 @@ def extract_keywords_prompt(input):
 
 def get_random_memories_prompt(count):
   response = '''
+  Provide a list of ''' + str(count) + ''' random memories covering many random topics as any typical person would encounter in their daily lives. The memory should be a short phrase or sentence, in past tense, that describes a memory of one of the following: an action, an experience, a conversation, a thought, a realization. The memory should include names of any people involved in that memory.
+
+  Example:
+
+  Went to the store for groceries
+  Bought an expensive and fast new car
+  Went to a new Italian restaurant with my friend Bob
+  Realized that I should focus more on my health
+  Started learning to play the guitar
+  A scary dog bit me
+
+  Please provide a list of ''' + str(count) + ''' random and varied memories, one per line. Do not number the lines. Respond only like the example.
+  '''
+  return format_response(response)
+
+def get_random_memories_csv_prompt(count):
+  response = '''
   Provide a list of ''' + str(count) + ''' random memories as csv formatted data. Do not include a column header row. The data should cover many random topics as any typical person would encounter in their daily lives. The data should have the following columns: 
   
   memory, keywords
@@ -35,7 +52,7 @@ def get_random_memories_prompt(count):
   '''
   return format_response(response)
 
-def get_random_memories_with_categories_prompt(count):
+def get_random_memories_csv_with_categories_prompt(count):
   response = '''
   Provide a list of ''' + str(count) + ''' random memories as csv formatted data. Do not include a column header row. The data should cover many random topics as any typical person would encounter in their daily lives. The data should have the following columns: 
   
