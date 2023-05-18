@@ -14,18 +14,18 @@ def extract_keywords_prompt(input):
 
 def get_random_memories_prompt(count):
   response = '''
-  Provide a list of ''' + str(count) + ''' random memories covering many random topics as any typical person would encounter in their daily lives. The memory should be a short phrase or sentence, in past tense, that describes a memory of one of the following: an action, an experience, a conversation, a thought, a realization. The memory should include names of any people involved in that memory.
+  Provide a list of ''' + str(count) + ''' random memories covering many random topics as any typical person would encounter in their daily lives. The memory should be a complete sentence, in past tense, that describes a memory of one of the following: an action, an experience, a conversation, a thought, a realization. The memory should include names of any people involved in that memory.
 
   Example:
 
-  Went to the store for groceries
-  Bought an expensive and fast new car
-  Went to a new Italian restaurant with my friend Bob
-  Realized that I should focus more on my health
-  Started learning to play the guitar
-  A scary dog bit me
+  I went to the store for groceries
+  Today I bought an expensive new car
+  My friend Bob and I went to a new Italian restaurant
+  While at the park, I realized I should focus more on my health
+  I started learning to play the guitar
+  A dog owned by my neighbor bit me
 
-  Please provide a list of ''' + str(count) + ''' random and varied memories, one per line. Do not number the lines. Respond only like the example.
+  Please provide a list of ''' + str(count) + ''' random and varied memory sentances, one per line. Do not number the lines. Respond only like the example.
   '''
   return format_response(response)
 

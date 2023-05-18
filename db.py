@@ -140,7 +140,7 @@ class db():
     def save_memory(entity_id, type_id, memory):
         # Get the embedding for the string and convert to bytes
         keywords = db.remove_stop_words(memory)
-        embedding = db.get_embedding(keywords)
+        embedding = db.get_embedding(memory)
         embedding_bytes = embedding.tobytes()
         
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -163,7 +163,7 @@ class db():
         for memory in memories:
             keywords.append(db.remove_stop_words(memory).lower())
 
-        embeddings = db.get_embeddings(keywords)
+        embeddings = db.get_embeddings(memories)
         data = []
         i = 0
         for memory in memories:

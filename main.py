@@ -54,7 +54,6 @@ if n > 1:
         keywords = asyncio.run(extract_keywords(input))
         print("Keywords: " + str(keywords))
     elif arg == "-related":
-        # For 
         entity_id = sys.argv[2]
         input = sys.argv[3]
         print("Finding memories for entity_id " + entity_id + " related to '" + input + "'")
