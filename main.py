@@ -33,11 +33,12 @@ if n > 1:
         else:
             print("Initializing a new simulation of type: " + simulation_type)
             simulation_id = simulation.setup_simulation(simulation_type)
-            simulation = db.get_simulation_detail(simulation_id)
+            #simulation = db.get_simulation_detail(simulation_id)
             print("Complete")
-            print(simulation)
-    # elif arg == "-run":
-    #     simulation_id = sys.argv[2]
+            #print(simulation)
+    elif arg == "-run":
+        simulation_id = sys.argv[2]
+        print("Not implemented yet")
     #     print("Running simulation_id: " + simulation_id)
     #     simulation = db.get_simulation(simulation_id)
     #     simulation.run()

@@ -41,6 +41,7 @@ class db():
         conn.execute(
             """CREATE TABLE IF NOT EXISTS simulation (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                type            TEXT NOT NULL,
                 date            TEXT NOT NULL,
                 cycles          INTEGER NOT NULL
                 )"""
@@ -74,18 +75,18 @@ class db():
     def get_simulations():
         conn = db.get_db_conn()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, date, cycles FROM simulation ORDER BY cycles DESC, date DESC")
+        cursor.execute("SELECT id, type, date, cycles FROM simulation ORDER BY cycles DESC, date DESC")
         rows = cursor.fetchall()
         simulations = [Simulation(*row) for row in rows]
         conn.close()
         return simulations
 
     @staticmethod
-    def new_simulation():
+    def new_simulation(simulation_type):
         conn = db.get_db_conn()
         cursor = conn.cursor()
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        cursor.execute('''INSERT INTO simulation (date, cycles) VALUES (?, ?)''', (date, 0))
+        cursor.execute('''INSERT INTO simulation (type, date, cycles) VALUES (?, ?, ?)''', (simulation_type, date, 0))
         simulation_id = cursor.lastrowid
         conn.commit()
         conn.close()
@@ -95,7 +96,7 @@ class db():
     def get_simulation(simulation_id):
         conn = db.get_db_conn()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, date, cycles FROM simulation WHERE id = ?", (simulation_id,))
+        cursor.execute("SELECT id, type, date, cycles FROM simulation WHERE id = ?", (simulation_id,))
         row = cursor.fetchone()
         simulation = Simulation(*row)
         conn.close()
