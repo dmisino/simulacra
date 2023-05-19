@@ -9,6 +9,8 @@ from numpy.linalg import norm
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
+from models import Entity, Memory, Simulation, SimulationDetail
+
 DB_NAME = "simulacra.db"
 TRANSFORMER_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -47,6 +49,7 @@ class db():
             """CREATE TABLE IF NOT EXISTS entity (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
                 simulation_id   INTEGER NOT NULL REFERENCES simulation (id),
+                type_id         INTEGER NOT NULL,
                 name            TEXT NOT NULL,
                 summary         TEXT NOT NULL,
                 description     TEXT NOT NULL,
@@ -68,49 +71,78 @@ class db():
         return conn
 
     @staticmethod
+    def get_simulations():
+        conn = db.get_db_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, date, cycles FROM simulation ORDER BY cycles DESC, date DESC")
+        rows = cursor.fetchall()
+        simulations = [Simulation(*row) for row in rows]
+        conn.close()
+        return simulations
+
+    @staticmethod
     def new_simulation():
-
         conn = db.get_db_conn()
         cursor = conn.cursor()
-
-        # Insert data into the "simulation" table
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        cursor.execute('''INSERT INTO simulation (date, cycles)
-                        VALUES (?, ?)''', (date, 0))
-        
-        # Get the last inserted ID
-        new_id = cursor.lastrowid
-
-        # Commit the changes and close the connection
+        cursor.execute('''INSERT INTO simulation (date, cycles) VALUES (?, ?)''', (date, 0))
+        simulation_id = cursor.lastrowid
         conn.commit()
         conn.close()
-
-        # Return the new ID
-        return new_id
+        return simulation_id
 
     @staticmethod
-    def new_entity(simulation_id, name, summary, description):
-
+    def get_simulation(simulation_id):
         conn = db.get_db_conn()
         cursor = conn.cursor()
-
-        # Insert data into the "entity" table
-        date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        cursor.execute('''INSERT INTO entity (simulation_id, name, summary, description, date)
-                        VALUES (?, ?, ?, ?, ?)''', (simulation_id, name, summary, description, date))
-        
-        # Get the last inserted ID
-        new_id = cursor.lastrowid
-
-        # Commit the changes and close the connection
-        conn.commit()
+        cursor.execute("SELECT id, date, cycles FROM simulation WHERE id = ?", (simulation_id,))
+        row = cursor.fetchone()
+        simulation = Simulation(*row)
         conn.close()
+        return simulation
 
-        # Return the new ID
-        return new_id
+    def get_simulation_entities(simulation_id):
+        conn = db.get_db_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, simulation_id, type_id, name, summary, description, date FROM entity WHERE simulation_id = ?", (simulation_id,))
+        rows = cursor.fetchall()
+        entities = []
+        for row in rows:
+            entity = Entity(*row)
+            entities.append(entity)
+        #entities = [Entity(*row) for row in rows]
+        conn.close()
+        return entities
+    
+    def get_simulation_detail(simulation_id):
+        simulation = db.get_simulation(simulation_id)
+        entities = db.get_simulation_entities(simulation_id)
+        simulation_detail = SimulationDetail(simulation.id, simulation.date, simulation.cycles, entities)
+        return simulation_detail
 
     @staticmethod
-    def get_memories_for_entity(entity_id):
+    def new_entity(simulation_id, entity_type_id, name, summary, description):
+        conn = db.get_db_conn()
+        cursor = conn.cursor()
+        date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute('''INSERT INTO entity (simulation_id, type_id, name, summary, description, date) VALUES (?, ?, ?, ?, ?)''', (simulation_id, entity_type_id, name, summary, description, date))
+        entity_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return entity_id
+
+    @staticmethod
+    def get_entity(entity_id):
+        conn = db.get_db_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, simulation_id, type_id, name, summary, description, date FROM entity WHERE id = ?", (entity_id,))
+        row = cursor.fetchone()
+        entity = Entity(*row)
+        conn.close()
+        return entity
+
+    @staticmethod
+    def get_entity_memories(entity_id):
         conn = db.get_db_conn()
         cursor = conn.cursor()
         cursor.execute("SELECT id, memory, keywords FROM memory WHERE entity_id = ?", (entity_id,))
@@ -138,14 +170,10 @@ class db():
     
     @staticmethod
     def save_memory(entity_id, type_id, memory):
-        # Get the embedding for the string and convert to bytes
         keywords = db.remove_stop_words(memory)
         embedding = db.get_embedding(memory)
         embedding_bytes = embedding.tobytes()
-        
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-        # Get connection and save record
         conn = db.get_db_conn()
         cursor = conn.cursor()
         cursor.execute("INSERT INTO memory (entity_id, type_id, memory, keywords, embedding, date) VALUES (?, ?, ?, ?, ?, ?)", (entity_id, type_id, memory, keywords, embedding_bytes, date))
@@ -157,12 +185,9 @@ class db():
         conn = db.get_db_conn()
         cursor = conn.cursor()        
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-        # split keywords into separate array
         keywords = []
         for memory in memories:
             keywords.append(db.remove_stop_words(memory).lower())
-
         embeddings = db.get_embeddings(memories)
         data = []
         i = 0
@@ -175,7 +200,6 @@ class db():
         conn.commit()
         conn.close()
 
-    # Find closest matching memories based on cosine similarity of embeddings
     @staticmethod
     def resize_embedding(embedding, target_dim):
         current_dim = embedding.shape[0]
@@ -183,12 +207,13 @@ class db():
             return embedding
         resized_embedding = np.interp(np.linspace(0, 1, target_dim), np.linspace(0, 1, current_dim), embedding)
         return resized_embedding
-
+    
     @staticmethod
     def find_relevant_memories_for_entity(entity_id, input_string, limit):
+        """
+        Find closest matching memories based on cosine similarity of embeddings
+        """
         input_embedding = db.get_embedding(db.remove_stop_words(input_string))
-
-        # Get connection and retrieve relevant columns from memory table
         conn = db.get_db_conn()
         cursor = conn.cursor()    
         cursor.execute("SELECT id, entity_id, type_id, memory, keywords, embedding FROM memory WHERE entity_id = ?", (entity_id,))
@@ -203,8 +228,6 @@ class db():
             new_row = row[:5] + (similarity,)
             new_rows.append(new_row)
 
-        # Sort the rows based on cosine similarity
+        # Sort rows based on cosine similarity
         sorted_rows = sorted(new_rows, key=lambda x: x[5], reverse=True)
-
-        # Return the limited number of similar rows with relevant columns
         return sorted_rows[:limit]

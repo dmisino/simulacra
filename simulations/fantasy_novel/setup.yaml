@@ -1,0 +1,52 @@
+name: fantasy_novel
+description: create a random fantasy world, a story plot, and one character agent
+steps:
+  - name: load identity prompt
+    step_type: LOAD_FILE
+    file: identity_writer.txt
+    output:
+      - name: identity
+  - name: create simulation
+    step_type: NEW_SIMULATION
+    output:
+      - name: id
+        alias: simulation_id
+  - name: create world
+    step_type: CREATE_ENTITY
+    entity_type: WORLD
+    file: create_world.txt
+    output:
+      - name: name
+        alias: world_name
+      - name: summary
+        alias: world_summary
+      - name: description
+        alias: world_description
+      - name: id
+        alias: world_id    
+  - name: create place
+    step_type: CREATE_ENTITY
+    entity_type: PLACE
+    file: create_place.txt
+    output:
+      - name: name
+        alias: place_name
+      - name: summary
+        alias: place_summary
+      - name: description
+        alias: place_description
+      - name: id
+        alias: place_id
+  - name: create npc
+    step_type: CREATE_ENTITY
+    entity_type: NPC
+    file: create_npc.txt
+    output:
+      - name: name
+        alias: npc_name
+      - name: summary
+        alias: npc_summary
+      - name: description
+        alias: npc_description
+      - name: id
+        alias: npc_id
