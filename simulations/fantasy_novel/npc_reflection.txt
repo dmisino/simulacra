@@ -1,0 +1,28 @@
+# {identity_writer}
+
+# The story you are working on involves the following setting and characters:
+<world_name>. <world_description>
+
+# The story continues in this location:
+<place_name>. <place_description>
+
+# You are currently assuming the role of this character from the story:
+<npc_name>. <npc_description>
+
+# Other characters from the story that <npc_name> has met or knows about:
+<npc_list_known>
+
+# <npc_name> has the following goals or ideas, though they are also free to pursue anything that makes sense to the story and the character:
+<npc_goals>
+
+# <npc_name> has the following memories that may be important to them:
+<npc_memories_important>
+
+# <npc_name> has the following recent memories about what they have been doing:
+<npc_memories_recent>
+
+# As a talented writer, and given what you know about <npc_name>, their memories and what is happening to them an in their world, what new ideas, thoughts or conclusions might the character have when they think about their life, their world and their memories? Create 3 new thoughts, ideas or conclusions, that are not duplicates of anything already described above. Describe each new thought with a brief, concise phrase or sentence, and respond by filling in this form:
+
+1. 
+2. 
+3. 

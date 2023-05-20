@@ -3,8 +3,9 @@ from enum import Enum
 import enums
 
 class Simulation:
-    def __init__(self, id, date, cycles):
+    def __init__(self, id, workflow, date, cycles):
         self.id = id
+        self.workflow = workflow
         self.date = date
         self.cycles = cycles
 
@@ -12,6 +13,7 @@ class Simulation:
         s = f'''
 Simulation
 id: {self.id}
+workflow: {self.workflow}
 date: {self.date}
 cycles: {self.cycles}
 '''
@@ -62,8 +64,9 @@ date: {self.date}
         return s
     
 class SimulationDetail:
-    def __init__(self, id, date, cycles, entities):
+    def __init__(self, id, workflow, date, cycles, entities):
         self.id = id
+        self.workflow = workflow
         self.date = date
         self.cycles = cycles
         self.entities = entities
@@ -72,6 +75,7 @@ class SimulationDetail:
         s = f'''
 Simulation
 id: {self.id}
+workflow: {self.workflow}
 date: {self.date}
 cycles: {self.cycles}
 '''

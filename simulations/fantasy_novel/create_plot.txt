@@ -1,0 +1,17 @@
+{identity}
+
+# The setting for the story is a world called {world_name}.
+
+{world_description}
+
+# Given the world described above, create a new and original story plot outline with all the elements required for a good story that keeps a reader engaged and interested. The story should be very clever, intelligent, original, and entertaining. The plot should have entertaining twists and unexpected turns. The plot outline should consist of a number of ACTs, each in a specific PLACE, a list of CHARACTERS and a detailed SUMMARY of what happens there. List the entire plot outline broken up into acts, by creating unrendered YAML markdown code like the following example: 
+
+```yaml
+# yaml code
+ACTS:
+  - ACT: 1
+    PLACE: Place name
+    CHARACTERS: 
+      - Character1
+      - Character2
+    SUMMARY: This is the act summary

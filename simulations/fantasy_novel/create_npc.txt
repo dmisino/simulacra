@@ -1,0 +1,15 @@
+{identity}
+
+# The setting for the story is a world called {world_name}.
+
+{world_description}
+
+# The specific location the story is currently happening in is called {place_name}.
+
+{place_description}
+
+# Describe a npc character from the story. Describe details about the npc character, but do not describe what they are currently doing. Describe details about who they are, a bit about their past and their personality, and visual details to paint a vivd picture for the reader. Respond with the npc_name of the character, a concise one sentence npc_summary, and a one single paragraph length npc_description in the following format:
+
+npc_name:: <npc name>
+npc_summary:: <npc summary>
+npc_description:: <npc description>
