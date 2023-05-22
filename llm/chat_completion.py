@@ -3,9 +3,9 @@ import inspect
 
 import openai
 
-import utils
-from db import db
-from prompt import extract_keywords_prompt, get_random_memories_prompt
+import common.utils as utils
+from db.datastore import db
+from llm.prompt import extract_keywords_prompt, get_random_memories_prompt
 
 
 async def get_chat_response(prompt):

@@ -1,0 +1,13 @@
+name: fantasy_novel_agent
+description: activity loop for agent
+steps:
+  - name: identity prompt
+    step_type: FILE_LOAD
+    file: identity.txt
+  - name: load simulation from db
+    step_type: DB_SIMULATION
+  - name: get recent memories
+    step_type: DB_RECENT_MEMORIES
+  - name: llm next action
+    step_type: AGENT_NEXT_ACTION
+    file: agent_next_action.txt

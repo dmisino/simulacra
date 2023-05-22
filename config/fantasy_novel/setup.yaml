@@ -1,7 +1,7 @@
 name: fantasy_novel
 description: create a random fantasy world, a story plot, and one character agent
 steps:
-  - name: llm identity prompt
+  - name: identity prompt
     step_type: FILE_LOAD
     file: identity.txt
   - name: create simulation

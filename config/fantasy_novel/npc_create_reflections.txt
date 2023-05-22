@@ -1,0 +1,11 @@
+{identity}
+
+# The setting for the story is a world called {world_name}.
+
+{world_description}
+
+# The character you are currently portraying is named {npc_name}
+
+{npc_description}
+
+

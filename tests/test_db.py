@@ -1,5 +1,5 @@
 from db import *
-from utils import *
+from common.utils import *
 import unittest
 import sqlite3
 import os

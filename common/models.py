@@ -1,6 +1,4 @@
-from enum import Enum
-
-import enums
+import common.enums as enums
 
 class Simulation:
     def __init__(self, id, workflow, date, cycles):

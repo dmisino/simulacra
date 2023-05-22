@@ -1,0 +1,25 @@
+{identity}
+
+# The setting for the story is a world called {world_name}.
+
+{world_description}
+
+# The specific location the story is currently happening in is called {place_name}.
+
+{place_description}
+
+# The character you are currently portraying is named {npc_name}
+
+{npc_description}
+
+# Your task is to continue the story, but in a much more detailed fashion then telling a normal story. You will be describing the characters movements minute-to-minute, each time describing their next action, or continuing the previous action they already were engaged in. If you are continuing the previous action, it should be worded to say the character continues their action. Each action listed represents 10 minutes of time. The character should go about all normal things they would do in their day, while also overall sticking to the story plot. Based on the above information, the characters memories and most recent actions, what would their next action be? Your response should be only one sentence which described the characters immediate activity, continuing their movements based on what they were last doing as described under most recent actions.
+
+# Important memories for {npc_name} that could effect their behavior in this situation
+
+{npc_important_memories}
+
+# Most recent actions for {npc_name} (oldest listed first)
+
+{npc_recent_memories}
+
+# What is their next action?

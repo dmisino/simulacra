@@ -1,6 +1,6 @@
 from enum import Enum
 
-class SimulationType(Enum):
+class SimulationWorkflow(Enum):
     fantasy_novel = 1
 
 class EntityType(Enum):
