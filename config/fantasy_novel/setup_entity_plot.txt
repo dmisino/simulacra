@@ -1,0 +1,15 @@
+{identity}
+
+# The setting for the story is a world called {world_name}.
+
+{world_description}
+
+# The story is currently taking place in {place_name}
+
+{place_description}
+
+# The main character is named {npc_name}
+
+{npc_description}
+
+# Given the world and charater described above, a new and original story plot, summerized in broad strokes in 1 or 2 paragraphs. The plot should clever, intelligent, original, and entertaining. The plot should have entertaining twists and unexpected turns. Respond just with the paragraphs of text describing the broad outline of the story.

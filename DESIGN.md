@@ -48,6 +48,21 @@ Agents should be able to be more than just characters. For example, a world agen
 
 There will be a list of pre-defined agent types available, such as NPC, WORLD, PLACE, PLOT, etc. Each agent instance can be configured to use any existing YAML workflow file.
 
+## Agent workflow
+
+Agent loops
+
+SIMULATION
+- plot
+
+NPC
+- planning
+- action
+- refection 
+
+- WORLD
+
+
 ## Agent workflow step options
 
 

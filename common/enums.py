@@ -1,12 +1,10 @@
 from enum import Enum
 
-class SimulationWorkflow(Enum):
-    fantasy_novel = 1
-
 class EntityType(Enum):
-    WORLD = 1
-    PLACE = 2
-    NPC = 3
+    WORLD = 1,
+    PLACE = 2,
+    NPC = 3,
+    PLOT = 4
 
 class MemoryType(Enum):
     MEMORY = 1,

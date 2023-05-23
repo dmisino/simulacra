@@ -1,8 +1,8 @@
 import asyncio
 import sys
 
+from common.utils import get_subfolders
 from db.datastore import db
-from common.enums import SimulationWorkflow
 import llm.chat_completion as chat_completion
 import simulation.workflow as workflow
 
@@ -23,7 +23,7 @@ async def process_commands(args):
             if n > 2:
                 if args[2] == "-quiet":
                     quiet = True
-            if workflow_name not in SimulationWorkflow.__members__:
+            if workflow_name not in get_subfolders("config"):
                 print("Unknown simulation workflow: " + workflow_name)
             else:
                 print("Initializing a new simulation with workflow: " + workflow_name)

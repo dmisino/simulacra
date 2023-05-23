@@ -29,6 +29,14 @@ def remove_stop_words(text):
 def print_error(method, error):
     print(f"{method} error occurred: ", str(error))    
 
+def get_subfolders(folder_path):
+    subfolder_names = []
+    for item in os.listdir(folder_path):
+        item_path = os.path.join(folder_path, item)
+        if os.path.isdir(item_path):
+            subfolder_names.append(item)
+    return subfolder_names
+
 def load_yaml_file(file_path):
     with open(file_path, 'r') as file:
         return yaml.safe_load(file)

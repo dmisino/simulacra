@@ -1,0 +1,34 @@
+name: fantasy_novel_agents
+description: agent configuration
+timestep_real: 5 # amount of real time in seconds in each time step
+timestep_sim: 300 # amount of time in seconds in the simulation that passes in each time step
+agents:
+  - name: main character
+    agent_type: NPC
+    steps:
+      - name: action
+        step_type: AGENT_NPC_ACTION
+        interval: 1
+        file: agent_npc_action.txt
+      - name: planning
+        step_type: AGENT_NPC_AGENDA
+        interval: 4
+        file: agent_npc_agenda.txt
+      - name: reflection
+        step_type: AGENT_REFLECTION
+        interval: 6
+        file: agent_npc_reflection.txt
+  - name: plot
+    agent_type: PLOT
+    steps:
+      - name: update
+        step_type: AGENT_PLOT_UPDATE
+        interval: 1
+        file: agent_plot_update.txt
+  - name: world
+    agent_type: WORLD
+    steps:
+      - name: update
+        step_type: AGENT_WORLD_EVENTS
+        interval: 1
+        file: agent_world_events.txt

@@ -1,20 +1,20 @@
 name: fantasy_novel
 description: create a random fantasy world, a story plot, and one character agent
 steps:
-  - name: identity prompt
+  - name: identity
     step_type: FILE_LOAD
     file: identity.txt
-  - name: create simulation
+  - name: setup simulation
     step_type: DB_SIMULATION
-  - name: create world
+  - name: setup world
     step_type: PROMPT_ENTITY
     entity_type: WORLD
-    file: create_world.txt  
-  - name: create place
+    file: setup_entity_world.txt  
+  - name: setup place
     step_type: PROMPT_ENTITY
     entity_type: PLACE
-    file: create_place.txt
-  - name: create npc
+    file: setup_entity_place.txt
+  - name: setup npc
     step_type: PROMPT_ENTITY
     entity_type: NPC
-    file: create_npc.txt
+    file: setup_entity_npc.txt
