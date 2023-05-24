@@ -6,6 +6,13 @@ from db.datastore import db
 import llm.chat_completion as chat_completion
 import simulation.workflow as workflow
 
+def verify_workflow(workflow_name):
+    if workflow_name in get_subfolders("config"):
+        return True
+    else:
+        print("Unknown simulation workflow: " + workflow_name)
+        return False
+
 async def process_commands(args):
     # Process command line args
     n = len(args)
@@ -23,20 +30,17 @@ async def process_commands(args):
             if n > 2:
                 if args[2] == "-quiet":
                     quiet = True
-            if workflow_name not in get_subfolders("config"):
-                print("Unknown simulation workflow: " + workflow_name)
-            else:
+            if verify_workflow(workflow_name):
                 print("Initializing a new simulation with workflow: " + workflow_name)
-                simulation_id = await workflow.setup_simulation(workflow_name, quiet)
+                simulation_id = await workflow.run_setup(workflow_name, quiet)
                 print("Complete, simulation_id: " + str(simulation_id))
                 if not quiet:
                     new_simulation_detail = db.get_simulation_detail(simulation_id) 
                     print(new_simulation_detail)
         elif arg == "-run":
             simulation_id = args[1]
-            print("Running simulation_id: " + simulation_id)
-            simulation = db.get_simulation(simulation_id)
-            simulation.run()
+            print("Running agents for simulation_id: " + simulation_id)
+            await workflow.run_agents(simulation_id)
         elif arg == "-simulations":
             simulations = db.get_simulations()
             for simulation in simulations:

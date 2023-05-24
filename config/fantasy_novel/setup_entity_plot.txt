@@ -12,4 +12,4 @@
 
 {npc_description}
 
-# Given the world and charater described above, a new and original story plot, summerized in broad strokes in 1 or 2 paragraphs. The plot should clever, intelligent, original, and entertaining. The plot should have entertaining twists and unexpected turns. Respond just with the paragraphs of text describing the broad outline of the story.
+# Given the world, place and charater described above, write a new and original story plot, by providing a broad summary in 1 or 2 paragraphs. The plot should clever, intelligent, original, and entertaining. The plot should have unexpected twists and turns. Respond just with the paragraphs of text describing the broad outline of the story.

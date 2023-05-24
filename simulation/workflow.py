@@ -18,24 +18,47 @@ def replace_tags(text, template_data):
         text = text.replace(f'{{{key}}}', str(value))
     return text
 
-async def setup_simulation(workflow_type, quiet=False):
+async def run_setup(workflow_type, quiet=False):
     """
     Creates a new simulation and initializes entities as defined in setup.yaml for the given simulation_type
     """
-    simulation_id = await process_setup_steps(workflow_type, quiet)
+    simulation_id = await process_setup(workflow_type, quiet)
     return simulation_id
 
-async def run_simulation(simulation_id, quiet=False):
+async def run_agents(simulation_id, quiet=False):
     """
-    Runs agents for all entities in the given simulation
+    Runs agents for the specified simulation
     """
-    #TODO: Implement
+    await process_agents(simulation_id, quiet)
+
+async def process_agents(simulation_id, quiet=False):
+    simulation = db.get_simulation(simulation_id)
+    yaml_file = utils.load_yaml_file(get_path(simulation.workflow, "agents.yaml"))
+    print(f"loaded yaml file {simulation.workflow}/agents.yaml")
+    time_step = yaml_file['time_step']
+    print(f"time_step: {time_step}")
+    agents = yaml_file['agents']
+    for agent in agents:
+        agent_name = agent['name']
+        agent_type = agent['agent_type']
+        print(f"Agent Name: {agent_name}")
+        print(f"Agent Type: {agent_type}")
+
+        # Loop through step nodes
+        steps = agent['steps']
+        for step in steps:
+            step_name = step['name']
+            step_type = step['step_type']
+            interval = step['interval']
+            files = step['file']
+            print(f"\tStep Name: {step_name}")
+            print(f"\tStep Type: {step_type}")
+            print(f"\tInterval: {interval}")
+            print(f"\tFile: {file}")
+        print()  # Add a newline between agents
     return 1
 
-async def process_agent_steps(entity_id):
-    return 1
-
-async def process_setup_steps(workflow_type, quiet=False):
+async def process_setup(workflow_type, quiet=False):
     yaml_file = utils.load_yaml_file(get_path(workflow_type, "setup.yaml"))
     steps = yaml_file['steps']
     template_data = {}
